@@ -169,7 +169,7 @@ class _RewardsPageState extends State<RewardsPage>
                 '🎁',
                 style: TextStyle(
                   fontSize: 48,
-                  color: colorScheme.onSecondary.withOpacity(0.3),
+                  color: colorScheme.onSecondary.withOpacity(1),
                 ),
               ),
             ),

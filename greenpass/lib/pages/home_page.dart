@@ -479,7 +479,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ),
         const SizedBox(height: 16),
         SizedBox(
-          height: 140,
+          height: 160,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: _featuredRewards.length,
@@ -490,7 +490,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 margin: EdgeInsets.only(
                   right: index < _featuredRewards.length - 1 ? 12 : 0,
                 ),
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
@@ -528,23 +528,28 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      reward.title,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
+                    const SizedBox(height: 6),
+                    Expanded(
+                      flex: 2,
+                      child: Text(
+                        reward.title,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                    const Spacer(),
-                    Text(
-                      reward.description,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurface.withOpacity(0.6),
+                    Expanded(
+                      flex: 3,
+                      child: Text(
+                        reward.description,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurface.withOpacity(0.6),
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
