@@ -538,7 +538,7 @@ class _ProfilePageState extends State<ProfilePage>
                   horizontalInterval: 0.5,
                   getDrawingHorizontalLine: (value) {
                     return FlLine(
-                      color: colorScheme.outline.withOpacity(0.2),
+                      color: colorScheme.outline.withOpacity(0.7),
                       strokeWidth: 1,
                     );
                   },
