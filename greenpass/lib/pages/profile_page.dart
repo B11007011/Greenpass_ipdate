@@ -108,21 +108,21 @@ class _ProfilePageState extends State<ProfilePage>
           slivers: [
             _buildAppBar(context),
             SliverPadding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
                   _buildProfileHeader(context),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   _buildAchievements(context),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   _buildStatsOverview(context),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   _buildCarbonChart(context),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   _buildMonthlyInsights(context),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   _buildSettings(context),
-                  const SizedBox(height: 100), // Bottom padding
+                  const SizedBox(height: 60),
                 ]),
               ),
             ),
@@ -186,7 +186,7 @@ class _ProfilePageState extends State<ProfilePage>
           child: SlideTransition(
             position: _profileSlideAnimation,
             child: Container(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
@@ -196,7 +196,7 @@ class _ProfilePageState extends State<ProfilePage>
                     colorScheme.secondaryContainer,
                   ],
                 ),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
                     color: colorScheme.shadow.withOpacity(0.1),
@@ -304,123 +304,74 @@ class _ProfilePageState extends State<ProfilePage>
   Widget _buildAchievements(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final achievements = _user?.achievements ?? [];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Achievements',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Text(
+            'Achievements',
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
-        const SizedBox(height: 16),
-        if (achievements.isEmpty)
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            _buildAchievementChip(
+              context,
+              '🎯',
+              'First Trip',
+              colorScheme.primary,
             ),
-            child: Center(
-              child: Column(
-                children: [
-                  Icon(
-                    Icons.emoji_events,
-                    size: 48,
-                    color: colorScheme.onSurface.withOpacity(0.4),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'No achievements yet',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: colorScheme.onSurface.withOpacity(0.6),
-                    ),
-                  ),
-                  Text(
-                    'Keep taking green trips to unlock badges!',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurface.withOpacity(0.5),
-                    ),
-                  ),
-                ],
-              ),
+            _buildAchievementChip(
+              context,
+              '⚡',
+              'Week Warrior',
+              colorScheme.secondary,
             ),
-          )
-        else
-          Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children:
-                achievements
-                    .map(
-                      (achievement) => _buildAchievementBadge(
-                        achievement,
-                        colorScheme,
-                        theme,
-                      ),
-                    )
-                    .toList(),
-          ),
+            _buildAchievementChip(
+              context,
+              '🌱',
+              'Carbon Saver',
+              colorScheme.tertiary,
+            ),
+          ],
+        ),
       ],
     );
   }
 
-  Widget _buildAchievementBadge(
-    String achievement,
-    ColorScheme colorScheme,
-    ThemeData theme,
+  Widget _buildAchievementChip(
+    BuildContext context,
+    String emoji,
+    String label,
+    Color color,
   ) {
-    final badgeInfo = _getAchievementInfo(achievement);
-
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            colorScheme.secondaryContainer,
-            colorScheme.tertiaryContainer,
-          ],
-        ),
+        color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: colorScheme.secondary.withOpacity(0.3),
-          width: 1,
-        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
+          Text(emoji, style: const TextStyle(fontSize: 16)),
+          const SizedBox(width: 6),
           Text(
-            badgeInfo['emoji'] ?? '🏅',
-            style: const TextStyle(fontSize: 20),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            achievement,
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: colorScheme.onSecondaryContainer,
+            label,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: color,
               fontWeight: FontWeight.w600,
             ),
           ),
         ],
       ),
     );
-  }
-
-  Map<String, String> _getAchievementInfo(String achievement) {
-    final achievementMap = {
-      'First Trip': {'emoji': '🎯'},
-      'Week Warrior': {'emoji': '⚡'},
-      'Carbon Saver': {'emoji': '🌱'},
-      'Eco Hero': {'emoji': '🏆'},
-      'Green Commuter': {'emoji': '🚇'},
-      'Bike Champion': {'emoji': '🚴'},
-      'Walk Master': {'emoji': '🚶'},
-    };
-
-    return achievementMap[achievement] ?? {'emoji': '🏅'};
   }
 
   Widget _buildStatsOverview(BuildContext context) {
@@ -538,7 +489,7 @@ class _ProfilePageState extends State<ProfilePage>
                   horizontalInterval: 0.5,
                   getDrawingHorizontalLine: (value) {
                     return FlLine(
-                      color: colorScheme.outline.withOpacity(0.7),
+                      color: colorScheme.outline.withOpacity(0.1),
                       strokeWidth: 1,
                     );
                   },
