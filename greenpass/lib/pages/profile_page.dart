@@ -137,35 +137,24 @@ class _ProfilePageState extends State<ProfilePage>
     final colorScheme = theme.colorScheme;
 
     return SliverAppBar(
-      expandedHeight: 120,
+      expandedHeight: 100,
       floating: false,
       pinned: true,
-      backgroundColor: colorScheme.tertiary,
+      backgroundColor: colorScheme.primaryContainer,
       flexibleSpace: FlexibleSpaceBar(
-        titlePadding: const EdgeInsets.only(left: 16, bottom: 16),
         title: Text(
-          'Profile & Insights',
-          style: theme.textTheme.headlineSmall?.copyWith(
-            color: colorScheme.onTertiary,
-            fontWeight: FontWeight.bold,
+          'Profile',
+          style: theme.textTheme.titleLarge?.copyWith(
+            color: colorScheme.onPrimaryContainer,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        background: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                colorScheme.tertiary,
-                colorScheme.tertiary.withOpacity(0.8),
-              ],
-            ),
-          ),
-        ),
+        centerTitle: false,
+        titlePadding: const EdgeInsets.only(left: 24, bottom: 16),
       ),
       actions: [
         IconButton(
-          icon: Icon(Icons.edit, color: colorScheme.onTertiary),
+          icon: Icon(Icons.edit, color: colorScheme.onPrimaryContainer),
           onPressed: () {
             // Edit profile functionality
           },
@@ -181,83 +170,82 @@ class _ProfilePageState extends State<ProfilePage>
     return AnimatedBuilder(
       animation: _profileAnimationController,
       builder: (context, child) {
-        return Transform.scale(
-          scale: _profileScaleAnimation.value,
-          child: SlideTransition(
-            position: _profileSlideAnimation,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    colorScheme.primaryContainer,
-                    colorScheme.secondaryContainer,
+        return FadeTransition(
+          opacity: _profileAnimationController,
+          child: Transform.scale(
+            scale: _profileScaleAnimation.value,
+            child: SlideTransition(
+              position: _profileSlideAnimation,
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceVariant.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: colorScheme.outline.withOpacity(0.2),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: colorScheme.shadow.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: colorScheme.shadow.withOpacity(0.1),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: colorScheme.primary,
-                    child: Text(
-                      _user?.name.substring(0, 1).toUpperCase() ?? 'E',
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        color: colorScheme.onPrimary,
+                child: Column(
+                  children: [
+                    CircleAvatar(
+                      radius: 40,
+                      backgroundColor: colorScheme.primary,
+                      child: Text(
+                        _user?.name.substring(0, 1).toUpperCase() ?? 'E',
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          color: colorScheme.onPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      _user?.name ?? 'Eco Commuter',
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        color: colorScheme.onSurface,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    _user?.name ?? 'Eco Commuter',
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onPrimaryContainer,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Member since ${DateFormat.yMMM().format(_user?.joinDate ?? DateTime.now())}',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onPrimaryContainer.withOpacity(0.7),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildProfileStat(
-                          'Total Trips',
-                          '${_trips.length}',
-                          Icons.route,
-                          colorScheme.primary,
-                          theme,
-                        ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Member since ${DateFormat.yMMM().format(_user?.joinDate ?? DateTime.now())}',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildProfileStat(
-                          'Green Days',
-                          '${_user?.consecutiveGreenDays ?? 0}',
-                          Icons.calendar_today,
-                          colorScheme.secondary,
-                          theme,
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildProfileStat(
+                            'Trips',
+                            '${_trips.length}',
+                            Icons.directions_walk_outlined,
+                            colorScheme.primary,
+                            theme,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildProfileStat(
+                            'Streak',
+                            '${_user?.consecutiveGreenDays ?? 0}',
+                            Icons.local_fire_department_outlined,
+                            colorScheme.secondary,
+                            theme,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -273,10 +261,13 @@ class _ProfilePageState extends State<ProfilePage>
     Color color,
     ThemeData theme,
   ) {
+    final colorScheme = theme.colorScheme;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withOpacity(0.15),
+        border: Border.all(color: color.withOpacity(0.3)),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -285,15 +276,12 @@ class _ProfilePageState extends State<ProfilePage>
           const SizedBox(height: 8),
           Text(
             value,
-            style: theme.textTheme.titleLarge?.copyWith(
-              color: color,
-              fontWeight: FontWeight.bold,
-            ),
+            style: theme.textTheme.titleLarge?.copyWith(color: color),
           ),
           Text(
             label,
             style: theme.textTheme.bodySmall?.copyWith(
-              color: color.withOpacity(0.8),
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
         ],
@@ -306,66 +294,71 @@ class _ProfilePageState extends State<ProfilePage>
     final colorScheme = theme.colorScheme;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Text(
-            'Achievements',
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+          padding: const EdgeInsets.only(bottom: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Badges',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Icon(Icons.chevron_right, color: colorScheme.outline, size: 20),
+            ],
           ),
         ),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            _buildAchievementChip(
-              context,
-              '🎯',
-              'First Trip',
-              colorScheme.primary,
-            ),
-            _buildAchievementChip(
-              context,
-              '⚡',
-              'Week Warrior',
-              colorScheme.secondary,
-            ),
-            _buildAchievementChip(
-              context,
-              '🌱',
-              'Carbon Saver',
-              colorScheme.tertiary,
-            ),
-          ],
+        SizedBox(
+          height: 100,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: 3,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (context, index) {
+              final theme = Theme.of(context);
+              final colorScheme = theme.colorScheme;
+              return _buildAchievementBadge(
+                context,
+                ['🚶', '⚡', '📉'][index],
+                ['First Mile', 'Power Week', 'Eco Trend'][index],
+                colorScheme.outline,
+              );
+            },
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildAchievementChip(
+  Widget _buildAchievementBadge(
     BuildContext context,
     String emoji,
     String label,
     Color color,
   ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      width: 120,
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
+        color: colorScheme.surfaceVariant,
+        border: Border.all(color: colorScheme.outline.withOpacity(0.3)),
+        borderRadius: BorderRadius.circular(16),
       ),
-      child: Row(
+      child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 16)),
-          const SizedBox(width: 6),
+          Text(emoji, style: const TextStyle(fontSize: 24)),
+          const SizedBox(height: 8),
           Text(
             label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: color,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurface,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -405,7 +398,10 @@ class _ProfilePageState extends State<ProfilePage>
                 value: '${totalCarbon.toStringAsFixed(1)} kg',
                 subtitle: 'vs driving',
                 icon: Icons.eco,
-                iconColor: Theme.of(context).colorScheme.secondary,
+                iconColor: theme.colorScheme.primary,
+                backgroundColor: theme.colorScheme.primaryContainer.withOpacity(
+                  0.3,
+                ),
                 showAnimation: true,
               ),
             ),
@@ -416,7 +412,9 @@ class _ProfilePageState extends State<ProfilePage>
                 value: '${totalDistance.toStringAsFixed(1)} km',
                 subtitle: 'green travel',
                 icon: Icons.straighten,
-                iconColor: Theme.of(context).colorScheme.primary,
+                iconColor: theme.colorScheme.secondary,
+                backgroundColor: theme.colorScheme.secondaryContainer
+                    .withOpacity(0.3),
                 showAnimation: true,
               ),
             ),
@@ -431,7 +429,9 @@ class _ProfilePageState extends State<ProfilePage>
                 value: '$totalCredits',
                 subtitle: 'available',
                 icon: Icons.stars,
-                iconColor: Theme.of(context).colorScheme.tertiary,
+                iconColor: theme.colorScheme.tertiary,
+                backgroundColor: theme.colorScheme.tertiaryContainer
+                    .withOpacity(0.3),
                 showAnimation: true,
               ),
             ),
@@ -442,7 +442,9 @@ class _ProfilePageState extends State<ProfilePage>
                 value: '$creditsSpent',
                 subtitle: 'credits used',
                 icon: Icons.redeem,
-                iconColor: Theme.of(context).colorScheme.secondary,
+                iconColor: theme.colorScheme.secondary,
+                backgroundColor: theme.colorScheme.secondaryContainer
+                    .withOpacity(0.3),
                 showAnimation: true,
               ),
             ),
@@ -462,23 +464,54 @@ class _ProfilePageState extends State<ProfilePage>
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: colorScheme.surface,
+        color: colorScheme.surfaceVariant.withOpacity(0.1),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: colorScheme.outline.withOpacity(0.1),
           width: 1,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: colorScheme.shadow.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Weekly Carbon Savings',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Weekly Activity',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'CO₂ Saved',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.primary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 16),
           SizedBox(
             height: 200,
             child: LineChart(
@@ -564,10 +597,7 @@ class _ProfilePageState extends State<ProfilePage>
                     spots: chartData,
                     isCurved: true,
                     gradient: LinearGradient(
-                      colors: [
-                        colorScheme.secondary,
-                        colorScheme.secondary.withOpacity(0.6),
-                      ],
+                      colors: [colorScheme.primary, colorScheme.secondary],
                     ),
                     barWidth: 3,
                     isStrokeCapRound: true,
@@ -587,7 +617,7 @@ class _ProfilePageState extends State<ProfilePage>
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          colorScheme.secondary.withOpacity(0.3),
+                          colorScheme.secondary.withOpacity(0.4),
                           colorScheme.secondary.withOpacity(0.05),
                         ],
                       ),
@@ -668,7 +698,7 @@ class _ProfilePageState extends State<ProfilePage>
           targetValue: '${monthlyCarbonGoal.toStringAsFixed(0)} kg',
           progress: carbonProgress,
           icon: Icons.eco,
-          progressColor: colorScheme.secondary,
+          progressColor: colorScheme.primary,
         ),
         const SizedBox(height: 12),
         ProgressStatCard(
@@ -677,7 +707,7 @@ class _ProfilePageState extends State<ProfilePage>
           targetValue: '$monthlyTripsGoal trips',
           progress: tripsProgress,
           icon: Icons.route,
-          progressColor: colorScheme.primary,
+          progressColor: colorScheme.secondary,
         ),
         const SizedBox(height: 16),
         Container(
@@ -795,25 +825,36 @@ class _ProfilePageState extends State<ProfilePage>
   ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: colorScheme.shadow.withOpacity(0.03),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: ListTile(
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: colorScheme.primaryContainer.withOpacity(0.5),
+            color: colorScheme.primaryContainer.withOpacity(0.4),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, color: colorScheme.primary, size: 20),
+          child: Icon(icon, color: colorScheme.primary),
         ),
         title: Text(
           title,
           style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w600,
+            color: colorScheme.onSurface,
           ),
         ),
         subtitle: Text(
           subtitle,
           style: theme.textTheme.bodySmall?.copyWith(
-            color: colorScheme.onSurface.withOpacity(0.6),
+            color: colorScheme.onSurfaceVariant,
           ),
         ),
         trailing: Icon(
