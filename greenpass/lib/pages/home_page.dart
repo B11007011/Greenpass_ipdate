@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/stat_card.dart';
 import '../services/trip_service.dart';
-import '../services/rewards_service.dart';
 import '../models/user_model.dart';
 import '../models/trip_model.dart';
 
@@ -14,12 +13,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final TripService _tripService = TripService();
-  final RewardsService _rewardsService = RewardsService();
 
   UserModel? _user;
   Map<String, double> _carbonSummary = {};
   List<TripModel> _todaysTrips = [];
-  List<RewardModel> _featuredRewards = [];
   bool _isLoading = true;
 
   late AnimationController _heroAnimationController;
@@ -70,13 +67,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       final user = await _tripService.getUserProfile();
       final carbonSummary = await _tripService.getCarbonSavingsSummary();
       final todaysTrips = await _tripService.getTodaysTrips();
-      final featuredRewards = await _rewardsService.getFeaturedRewards();
+
+      // We're now using local variables in _buildFeaturedRewards method
+      // to display featured rewards, so no need to fetch them here
 
       setState(() {
         _user = user;
         _carbonSummary = carbonSummary;
         _todaysTrips = todaysTrips;
-        _featuredRewards = featuredRewards;
         _isLoading = false;
       });
     } catch (e) {
@@ -233,19 +231,87 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.eco, color: colorScheme.secondary, size: 20),
-                      const SizedBox(width: 8),
-                      Text(
-                        'You have ${_user?.totalCredits ?? 0} Green Credits',
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: colorScheme.onSurface.withOpacity(0.8),
-                          fontWeight: FontWeight.w500,
+                  Container(
+                    decoration: BoxDecoration(
+                      color: colorScheme.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: colorScheme.primary.withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: colorScheme.secondary.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(Icons.eco,
+                                  color: colorScheme.secondary, size: 20),
+                            ),
+                            const SizedBox(width: 12),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Monthly Points',
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: colorScheme.onSurface.withOpacity(0.6),
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  '${_user?.monthlyGreenPoints ?? 100}',
+                                  style: theme.textTheme.headlineSmall?.copyWith(
+                                    color: colorScheme.secondary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(width: 20),
+                            Container(
+                              height: 40,
+                              width: 1,
+                              color: colorScheme.outline.withOpacity(0.2),
+                            ),
+                            const SizedBox(width: 20),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Deducted Points',
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: colorScheme.onSurface.withOpacity(0.6),
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  '${_user?.totalCreditsEarned ?? 0}',
+                                  style: theme.textTheme.headlineSmall?.copyWith(
+                                    color: colorScheme.primary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(width: 16),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ],
               ),
@@ -290,7 +356,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             const SizedBox(width: 12),
             Expanded(
               child: CompactStatCard(
-                label: 'Credits Earned',
+                label: 'Credits Minus',
                 value: '$todayCredits',
                 icon: Icons.stars,
                 backgroundColor: Theme.of(
@@ -366,9 +432,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ),
         ),
         const SizedBox(height: 16),
-        ..._todaysTrips
-            .take(3)
-            .map(
+        ..._todaysTrips.take(3).map(
               (trip) => Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Container(
@@ -454,104 +518,156 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
+    // Define some attractive rewards
+    final featuredRewards = [
+      {
+        'emoji': '☕',
+        'title': 'Free Coffee',
+        'description': 'Get a free coffee at any partner cafe',
+        'credits': 50,
+        'color': const Color(0xFF6F4E37), // Coffee brown
+      },
+      {
+        'emoji': '🚲',
+        'title': 'Bike Share',
+        'description': '30 mins free bike rental',
+        'credits': 30,
+        'color': const Color(0xFF2196F3), // Blue
+      },
+      {
+        'emoji': '🛍️',
+        'title': 'Shopping',
+        'description': '10% off at eco-friendly stores',
+        'credits': 75,
+        'color': const Color(0xFF4CAF50), // Green
+      },
+      {
+        'emoji': '🎬',
+        'title': 'Movie Ticket',
+        'description': 'Buy 1 get 1 free movie ticket',
+        'credits': 100,
+        'color': const Color(0xFF9C27B0), // Purple
+      },
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Featured Rewards',
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Featured Rewards',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            TextButton(
-              onPressed: () {
-                // Navigate to rewards page
-              },
-              child: Text(
-                'View All',
-                style: TextStyle(color: colorScheme.primary),
+              TextButton(
+                onPressed: () {
+                  // Navigate to rewards page
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: colorScheme.primary,
+                  padding: EdgeInsets.zero,
+                  minimumSize: const Size(50, 30),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: const Text('See All'),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
         SizedBox(
-          height: 160,
-          child: ListView.builder(
+          height: 180, // Slightly taller to accommodate the new design
+          child: ListView.separated(
             scrollDirection: Axis.horizontal,
-            itemCount: _featuredRewards.length,
+            itemCount: featuredRewards.length,
+            separatorBuilder: (context, index) => const SizedBox(width: 12),
             itemBuilder: (context, index) {
-              final reward = _featuredRewards[index];
-              return Container(
-                width: 160,
-                margin: EdgeInsets.only(
-                  right: index < _featuredRewards.length - 1 ? 12 : 0,
-                ),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: colorScheme.surface,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: colorScheme.outline.withOpacity(0.1),
-                    width: 1,
+              final reward = featuredRewards[index];
+              return SizedBox(
+                width: 150,
+                child: Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          reward.iconEmoji,
-                          style: const TextStyle(fontSize: 24),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () {
+                      // Handle reward tap
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            reward['color'] as Color,
+                            (reward['color'] as Color).withOpacity(0.8),
+                          ],
                         ),
-                        const Spacer(),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                reward['emoji'] as String,
+                                style: const TextStyle(fontSize: 28),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white24,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  '${reward['credits']} pts',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          decoration: BoxDecoration(
-                            color: colorScheme.primary.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            '${reward.creditsRequired}',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: colorScheme.primary,
+                          const Spacer(),
+                          Text(
+                            reward['title'] as String,
+                            style: const TextStyle(
+                              color: Colors.white,
                               fontWeight: FontWeight.bold,
+                              fontSize: 16,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Expanded(
-                      flex: 2,
-                      child: Text(
-                        reward.title,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                          const SizedBox(height: 4),
+                          Text(
+                            reward['description'] as String,
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ),
                     ),
-                    Expanded(
-                      flex: 3,
-                      child: Text(
-                        reward.description,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurface.withOpacity(0.6),
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               );
             },
@@ -629,6 +745,116 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               ),
             ),
           ],
+        ),
+        const SizedBox(height: 16),
+        // Car and Route Information
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceVariant.withOpacity(0.3),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: colorScheme.outline.withOpacity(0.1),
+              width: 1,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.directions_car,
+                    color: colorScheme.primary,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Your Vehicle',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Toyota Altis 1.8',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Divider(
+                height: 1,
+                color: colorScheme.outline.withOpacity(0.2),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Icon(
+                    Icons.route,
+                    color: colorScheme.primary,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Current Route',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Container(
+                    width: 4,
+                    height: 40,
+                    margin: const EdgeInsets.only(left: 8, right: 16),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Home',
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Office',
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.error.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Text(
+                      '-15 credits',
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: colorScheme.error,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ],
     );

@@ -16,7 +16,7 @@ class _TripTrackerPageState extends State<TripTrackerPage>
   final TripService _tripService = TripService();
   List<TripModel> _trips = [];
   bool _isLoading = true;
-  
+
   late AnimationController _listAnimationController;
   final List<AnimationController> _itemControllers = [];
 
@@ -152,13 +152,16 @@ class _TripTrackerPageState extends State<TripTrackerPage>
     final today = DateTime.now();
     final todaysTrips = _trips.where((trip) {
       return trip.timestamp.day == today.day &&
-             trip.timestamp.month == today.month &&
-             trip.timestamp.year == today.year;
+          trip.timestamp.month == today.month &&
+          trip.timestamp.year == today.year;
     }).toList();
 
-    final todaysCarbon = todaysTrips.fold(0.0, (sum, trip) => sum + trip.carbonSavedKg);
-    final todaysCredits = todaysTrips.fold(0, (sum, trip) => sum + trip.creditsEarned);
-    final todaysDistance = todaysTrips.fold(0.0, (sum, trip) => sum + trip.distanceKm);
+    final todaysCarbon =
+        todaysTrips.fold(0.0, (sum, trip) => sum + trip.carbonSavedKg);
+    final todaysCredits =
+        todaysTrips.fold(0, (sum, trip) => sum + trip.creditsEarned);
+    final todaysDistance =
+        todaysTrips.fold(0.0, (sum, trip) => sum + trip.distanceKm);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,8 +169,8 @@ class _TripTrackerPageState extends State<TripTrackerPage>
         Text(
           'Today\'s Impact',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 16),
         Row(
@@ -211,7 +214,7 @@ class _TripTrackerPageState extends State<TripTrackerPage>
               child: StatCard(
                 title: 'Credits',
                 value: '$todaysCredits',
-                subtitle: 'earned today',
+                subtitle: 'deducted today',
                 icon: Icons.stars,
                 iconColor: Theme.of(context).colorScheme.tertiary,
                 showAnimation: true,
@@ -230,17 +233,16 @@ class _TripTrackerPageState extends State<TripTrackerPage>
     // Get transport type counts for this week
     final now = DateTime.now();
     final weekStart = now.subtract(Duration(days: now.weekday - 1));
-    final thisWeeksTrips = _trips.where((trip) => 
-      trip.timestamp.isAfter(weekStart)
-    ).toList();
+    final thisWeeksTrips =
+        _trips.where((trip) => trip.timestamp.isAfter(weekStart)).toList();
 
     final transportCounts = <String, int>{};
     final transportCarbon = <String, double>{};
-    
+
     for (final trip in thisWeeksTrips) {
-      transportCounts[trip.transportType] = 
+      transportCounts[trip.transportType] =
           (transportCounts[trip.transportType] ?? 0) + 1;
-      transportCarbon[trip.transportType] = 
+      transportCarbon[trip.transportType] =
           (transportCarbon[trip.transportType] ?? 0) + trip.carbonSavedKg;
     }
 
@@ -288,7 +290,7 @@ class _TripTrackerPageState extends State<TripTrackerPage>
                 creditsEarned: 0,
               );
               final carbon = transportCarbon[entry.key] ?? 0;
-              
+
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Row(
@@ -382,15 +384,21 @@ class _TripTrackerPageState extends State<TripTrackerPage>
               Text(
                 'No trips recorded yet',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                ),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.6),
+                    ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Start tracking your green journeys!',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-                ),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.5),
+                    ),
               ),
             ],
           ),
@@ -404,8 +412,8 @@ class _TripTrackerPageState extends State<TripTrackerPage>
         delegate: SliverChildBuilderDelegate(
           (context, index) {
             final trip = _trips[index];
-            final animationController = index < _itemControllers.length 
-                ? _itemControllers[index] 
+            final animationController = index < _itemControllers.length
+                ? _itemControllers[index]
                 : null;
 
             return _buildTripItem(trip, animationController, index);
@@ -416,7 +424,8 @@ class _TripTrackerPageState extends State<TripTrackerPage>
     );
   }
 
-  Widget _buildTripItem(TripModel trip, AnimationController? controller, int index) {
+  Widget _buildTripItem(
+      TripModel trip, AnimationController? controller, int index) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -487,13 +496,14 @@ class _TripTrackerPageState extends State<TripTrackerPage>
                   ),
                   const SizedBox(height: 4),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: colorScheme.secondary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
-                      '+${trip.creditsEarned}',
+                      '-${trip.creditsEarned}',
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: colorScheme.secondary,
                         fontWeight: FontWeight.bold,
@@ -566,7 +576,8 @@ class _TripTrackerPageState extends State<TripTrackerPage>
     return tripCard;
   }
 
-  Widget _buildMetric(String value, IconData icon, Color color, ThemeData theme) {
+  Widget _buildMetric(
+      String value, IconData icon, Color color, ThemeData theme) {
     return Row(
       children: [
         Icon(
@@ -689,8 +700,8 @@ class _AddTripBottomSheetState extends State<AddTripBottomSheet> {
                 },
                 selectedColor: colorScheme.primaryContainer,
                 labelStyle: TextStyle(
-                  color: isSelected 
-                      ? colorScheme.onPrimaryContainer 
+                  color: isSelected
+                      ? colorScheme.onPrimaryContainer
                       : colorScheme.onSurface,
                   fontWeight: FontWeight.w500,
                 ),
@@ -790,9 +801,9 @@ class _AddTripBottomSheetState extends State<AddTripBottomSheet> {
 
   bool _canSubmit() {
     return !_isSubmitting &&
-           _selectedTransport != null &&
-           _distanceController.text.isNotEmpty &&
-           double.tryParse(_distanceController.text) != null;
+        _selectedTransport != null &&
+        _distanceController.text.isNotEmpty &&
+        double.tryParse(_distanceController.text) != null;
   }
 
   Future<void> _submitTrip() async {
@@ -808,7 +819,8 @@ class _AddTripBottomSheetState extends State<AddTripBottomSheet> {
         transportType: _selectedTransport!,
         distanceKm: distance,
         route: _routeController.text.isEmpty ? null : _routeController.text,
-        fromLocation: _fromController.text.isEmpty ? null : _fromController.text,
+        fromLocation:
+            _fromController.text.isEmpty ? null : _fromController.text,
         toLocation: _toController.text.isEmpty ? null : _toController.text,
       );
 

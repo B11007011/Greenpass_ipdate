@@ -413,8 +413,8 @@ class _ProfilePageState extends State<ProfilePage>
                 subtitle: 'green travel',
                 icon: Icons.straighten,
                 iconColor: theme.colorScheme.secondary,
-                backgroundColor: theme.colorScheme.secondaryContainer
-                    .withOpacity(0.3),
+                backgroundColor:
+                    theme.colorScheme.secondaryContainer.withOpacity(0.3),
                 showAnimation: true,
               ),
             ),
@@ -430,8 +430,8 @@ class _ProfilePageState extends State<ProfilePage>
                 subtitle: 'available',
                 icon: Icons.stars,
                 iconColor: theme.colorScheme.tertiary,
-                backgroundColor: theme.colorScheme.tertiaryContainer
-                    .withOpacity(0.3),
+                backgroundColor:
+                    theme.colorScheme.tertiaryContainer.withOpacity(0.3),
                 showAnimation: true,
               ),
             ),
@@ -443,8 +443,8 @@ class _ProfilePageState extends State<ProfilePage>
                 subtitle: 'credits used',
                 icon: Icons.redeem,
                 iconColor: theme.colorScheme.secondary,
-                backgroundColor: theme.colorScheme.secondaryContainer
-                    .withOpacity(0.3),
+                backgroundColor:
+                    theme.colorScheme.secondaryContainer.withOpacity(0.3),
                 showAnimation: true,
               ),
             ),
@@ -585,13 +585,12 @@ class _ProfilePageState extends State<ProfilePage>
                 minX: 0,
                 maxX: 6,
                 minY: 0,
-                maxY:
-                    chartData.isEmpty
-                        ? 2
-                        : chartData
-                                .map((e) => e.y)
-                                .reduce((a, b) => a > b ? a : b) +
-                            0.5,
+                maxY: chartData.isEmpty
+                    ? 2
+                    : chartData
+                            .map((e) => e.y)
+                            .reduce((a, b) => a > b ? a : b) +
+                        0.5,
                 lineBarsData: [
                   LineChartBarData(
                     spots: chartData,
@@ -603,13 +602,13 @@ class _ProfilePageState extends State<ProfilePage>
                     isStrokeCapRound: true,
                     dotData: FlDotData(
                       show: true,
-                      getDotPainter:
-                          (spot, percent, barData, index) => FlDotCirclePainter(
-                            radius: 4,
-                            color: colorScheme.secondary,
-                            strokeWidth: 2,
-                            strokeColor: colorScheme.surface,
-                          ),
+                      getDotPainter: (spot, percent, barData, index) =>
+                          FlDotCirclePainter(
+                        radius: 4,
+                        color: colorScheme.secondary,
+                        strokeWidth: 2,
+                        strokeColor: colorScheme.surface,
+                      ),
                     ),
                     belowBarData: BarAreaData(
                       show: true,
@@ -742,7 +741,7 @@ class _ProfilePageState extends State<ProfilePage>
                     Text(
                       monthlyCredits > 0
                           ? 'You\'ve earned $monthlyCredits credits this month! That\'s ${(monthlyCredits / 10).toStringAsFixed(1)}kg of CO₂ saved.'
-                          : 'Start taking green trips to earn credits and save the planet!',
+                          : 'Start taking green trips to save credits and save the planet!',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colorScheme.onTertiaryContainer.withOpacity(0.8),
                       ),

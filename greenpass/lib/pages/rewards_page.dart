@@ -272,7 +272,7 @@ class _RewardsPageState extends State<RewardsPage>
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Earn more credits by taking green trips!',
+                          'Save more credits by taking green trips!',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: colorScheme.onSurface.withOpacity(0.7),
                           ),
@@ -306,47 +306,43 @@ class _RewardsPageState extends State<RewardsPage>
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
-            children:
-                _categories.map((category) {
-                  final isSelected = _selectedCategory == category;
-                  final displayName =
-                      category == 'all'
-                          ? 'All Rewards'
-                          : _rewardsService.getCategoryDisplayName(category);
-                  final icon =
-                      category == 'all'
-                          ? '🎁'
-                          : _rewardsService.getCategoryIcon(category);
+            children: _categories.map((category) {
+              final isSelected = _selectedCategory == category;
+              final displayName = category == 'all'
+                  ? 'All Rewards'
+                  : _rewardsService.getCategoryDisplayName(category);
+              final icon = category == 'all'
+                  ? '🎁'
+                  : _rewardsService.getCategoryIcon(category);
 
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: FilterChip(
-                      label: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(icon),
-                          const SizedBox(width: 8),
-                          Text(displayName),
-                        ],
-                      ),
-                      selected: isSelected,
-                      onSelected: (selected) => _filterRewards(category),
-                      selectedColor: colorScheme.primaryContainer,
-                      checkmarkColor: colorScheme.primary,
-                      labelStyle: TextStyle(
-                        color:
-                            isSelected
-                                ? colorScheme.onPrimaryContainer
-                                : colorScheme.onSurface,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                    ),
-                  );
-                }).toList(),
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: FilterChip(
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(icon),
+                      const SizedBox(width: 8),
+                      Text(displayName),
+                    ],
+                  ),
+                  selected: isSelected,
+                  onSelected: (selected) => _filterRewards(category),
+                  selectedColor: colorScheme.primaryContainer,
+                  checkmarkColor: colorScheme.primary,
+                  labelStyle: TextStyle(
+                    color: isSelected
+                        ? colorScheme.onPrimaryContainer
+                        : colorScheme.onSurface,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                ),
+              );
+            }).toList(),
           ),
         ),
       ],
@@ -459,17 +455,17 @@ class _RewardsPageState extends State<RewardsPage>
                   fontSize: 64,
                   color: Theme.of(
                     context,
-                  ).colorScheme.onSurface.withOpacity(0.3),
+                  ).colorScheme.onSurface.withOpacity(0.88),
                 ),
               ),
               const SizedBox(height: 16),
               Text(
                 'No rewards in this category',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.onSurface.withOpacity(0.6),
-                ),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.6),
+                    ),
               ),
             ],
           ),
@@ -508,10 +504,9 @@ class _RewardsPageState extends State<RewardsPage>
           color: colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color:
-                canAfford
-                    ? colorScheme.primary.withOpacity(0.2)
-                    : colorScheme.outline.withOpacity(0.1),
+            color: canAfford
+                ? colorScheme.primary.withOpacity(0.2)
+                : colorScheme.outline.withOpacity(0.1),
             width: canAfford ? 2 : 1,
           ),
           boxShadow: [
@@ -535,19 +530,17 @@ class _RewardsPageState extends State<RewardsPage>
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color:
-                        canAfford
-                            ? colorScheme.primary.withOpacity(0.1)
-                            : colorScheme.outline.withOpacity(0.1),
+                    color: canAfford
+                        ? colorScheme.primary.withOpacity(0.1)
+                        : colorScheme.outline.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
                     '${reward.creditsRequired}',
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color:
-                          canAfford
-                              ? colorScheme.primary
-                              : colorScheme.onSurface.withOpacity(0.5),
+                      color: canAfford
+                          ? colorScheme.primary
+                          : colorScheme.onSurface.withOpacity(0.5),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -559,10 +552,9 @@ class _RewardsPageState extends State<RewardsPage>
               reward.title,
               style: theme.textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.bold,
-                color:
-                    canAfford
-                        ? colorScheme.onSurface
-                        : colorScheme.onSurface.withOpacity(0.6),
+                color: canAfford
+                    ? colorScheme.onSurface
+                    : colorScheme.onSurface.withOpacity(0.6),
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -584,14 +576,12 @@ class _RewardsPageState extends State<RewardsPage>
               child: ElevatedButton(
                 onPressed: canAfford ? () => _redeemReward(reward) : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      canAfford
-                          ? colorScheme.primary
-                          : colorScheme.outline.withOpacity(0.3),
-                  foregroundColor:
-                      canAfford
-                          ? colorScheme.onPrimary
-                          : colorScheme.onSurface.withOpacity(0.5),
+                  backgroundColor: canAfford
+                      ? colorScheme.primary
+                      : colorScheme.outline.withOpacity(0.3),
+                  foregroundColor: canAfford
+                      ? colorScheme.onPrimary
+                      : colorScheme.onSurface.withOpacity(0.5),
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   shape: RoundedRectangleBorder(
@@ -615,12 +605,11 @@ class _RewardsPageState extends State<RewardsPage>
   void _showRewardDetails(RewardModel reward) {
     showDialog(
       context: context,
-      builder:
-          (context) => RewardDetailsDialog(
-            reward: reward,
-            userCredits: _user?.totalCredits ?? 0,
-            onRedeem: () => _redeemReward(reward),
-          ),
+      builder: (context) => RewardDetailsDialog(
+        reward: reward,
+        userCredits: _user?.totalCredits ?? 0,
+        onRedeem: () => _redeemReward(reward),
+      ),
     );
   }
 
@@ -654,8 +643,8 @@ class _RewardsPageState extends State<RewardsPage>
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder:
-          (context) => RedemptionHistoryBottomSheet(redemptions: _redemptions),
+      builder: (context) =>
+          RedemptionHistoryBottomSheet(redemptions: _redemptions),
     );
   }
 }
@@ -748,13 +737,12 @@ class RewardDetailsDialog extends StatelessWidget {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed:
-              canAfford
-                  ? () {
-                    Navigator.of(context).pop();
-                    onRedeem();
-                  }
-                  : null,
+          onPressed: canAfford
+              ? () {
+                  Navigator.of(context).pop();
+                  onRedeem();
+                }
+              : null,
           style: ElevatedButton.styleFrom(
             backgroundColor: colorScheme.primary,
             foregroundColor: colorScheme.onPrimary,

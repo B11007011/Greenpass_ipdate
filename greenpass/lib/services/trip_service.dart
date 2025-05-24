@@ -10,11 +10,11 @@ class TripService {
 
   // Carbon savings calculation constants (kg CO2 saved per km vs private car)
   static const Map<String, double> _carbonSavingsPerKm = {
-    'mrt': 0.08,
-    'bus': 0.06,
-    'walk': 0.12,
-    'bike': 0.12,
-    'youbike': 0.11,
+    'walk': 0.0,
+    'bike': 0.0,
+    'youbike': 0.0,
+    'mrt': 0.12,  // kg CO2 per km saved vs car
+    'bus': 0.08,  // kg CO2 per km saved vs car
   };
 
   // Get all trips from storage
@@ -113,8 +113,9 @@ class TripService {
   Future<void> _updateUserStats(double carbonSaved, int credits) async {
     final user = await getUserProfile();
     final updatedUser = user.copyWith(
-      totalCarbonSavedKg: user.totalCarbonSavedKg + carbonSaved,
-      totalCredits: user.totalCredits + credits,
+      totalCarbonSavedKg: user.totalCarbonSavedKg + carbonSaved.toInt(),
+      totalCreditsEarned: user.totalCreditsEarned + credits,
+      availableCredits: user.availableCredits + credits,
     );
     await _saveUserProfile(updatedUser);
   }
@@ -131,8 +132,17 @@ class TripService {
         name: 'Eco Commuter',
         email: 'user@greenpass.app',
         totalCarbonSavedKg: 0,
-        totalCredits: 0,
+        totalCreditsEarned: 0,
+        availableCredits: 0,
         achievements: [],
+        preferences: {},
+        tripHistory: [],
+        monthlyGreenPoints: 100,
+        lastGreenPointsReset: DateTime.now(),
+        vehicleInfo: null,
+        redemptions: [],
+        personalVehicleUsageCount: 0,
+        hasUsedPublicTransportThisMonth: false,
         joinDate: DateTime.now(),
         consecutiveGreenDays: 0,
       );
@@ -209,11 +219,20 @@ class TripService {
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: 'Eco Commuter',
       email: 'user@greenpass.app',
-      totalCarbonSavedKg: totalCarbon,
-      totalCredits: totalCredits,
+      totalCarbonSavedKg: totalCarbon.toInt(),
+      totalCreditsEarned: totalCredits,
+      availableCredits: totalCredits,
       achievements: ['First Trip', 'Week Warrior', 'Carbon Saver'],
       joinDate: DateTime.now().subtract(const Duration(days: 14)),
       consecutiveGreenDays: 7,
+      preferences: {},
+      tripHistory: [],
+      monthlyGreenPoints: 100,
+      lastGreenPointsReset: DateTime.now(),
+      vehicleInfo: null,
+      redemptions: [],
+      personalVehicleUsageCount: 0,
+      hasUsedPublicTransportThisMonth: true,
     );
 
     await _saveUserProfile(user);
@@ -270,7 +289,7 @@ class TripService {
     return {
       'today': todaysCarbon,
       'week': weeksCarbon,
-      'total': user.totalCarbonSavedKg,
+      'total': user.totalCarbonSavedKg.toDouble(),
     };
   }
 }

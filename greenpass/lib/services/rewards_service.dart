@@ -149,7 +149,8 @@ class RewardsService {
 
     // Deduct credits from user
     final updatedUser = user.copyWith(
-      totalCredits: user.totalCredits - reward.creditsRequired,
+      totalCreditsEarned: user.totalCreditsEarned,
+      availableCredits: user.availableCredits - reward.creditsRequired,
     );
     await _saveUserProfile(updatedUser);
 
